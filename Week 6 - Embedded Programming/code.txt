@@ -1,0 +1,50 @@
+const int pointerButton = 7;
+const int toggleButton = 8;
+  
+const int led1 = 10;
+const int led2 = 11;
+const int led3 = 12;
+  
+int pointer = 0;
+
+void setup()
+{
+  pinMode(pointerButton, INPUT);
+  pinMode(toggleButton, INPUT);
+  
+  pinMode(led1, OUTPUT);
+  pinMode(led2, OUTPUT);
+  pinMode(led3, OUTPUT);
+  
+  Serial.begin(9600);
+  Serial.println("Setup Done");
+  Serial.println("Target LED: " + String(pointer + 1));
+}
+
+void loop()
+{
+  if (digitalRead(pointerButton) == HIGH)
+      {
+        pointer++;
+        pointer %= 3;
+        Serial.println("Target LED: " + String(pointer + 1));
+    	delay(300);
+      }
+  else if (digitalRead(toggleButton) == HIGH)
+  {
+    int targetPin = pointer + 10;
+    
+    if (digitalRead(targetPin) == HIGH)
+    {
+        digitalWrite(targetPin, LOW); 
+      	Serial.println("Turn off LED " + String(pointer + 1));
+    }
+    else
+    {
+        digitalWrite(targetPin, HIGH);
+      	Serial.println("Turn on LED " + String(pointer + 1));
+    }
+    
+    delay(300);
+  }
+}
