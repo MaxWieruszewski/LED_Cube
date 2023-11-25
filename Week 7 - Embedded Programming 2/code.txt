@@ -1,0 +1,76 @@
+ C++ code
+ Autor Maximilian Wieruszewski
+ MatrikelNummer 25447
+
+#include LiquidCrystal_I2C.h
+LiquidCrystal_I2C lcd(0x20,16,2);
+
+int displayNumber = -1;
+
+const int buttonPin = 6;
+const int ledPin = 5;
+
+bool ledOn = false;
+
+void setup() {
+  lcd.init();       
+  lcd.backlight();  
+  
+  pinMode(A0, INPUT);
+  Serial.begin(9600);
+  
+  pinMode(buttonPin, INPUT);
+  pinMode(ledPin, OUTPUT);
+}
+
+
+void loop() {
+  int potentiometer = analogRead(A0);
+  int potentiometerMapped = map(potentiometer, 0, 1023, 0, 255);
+  
+  bool stateChanged = false;
+  
+   Button Toggle
+  if (digitalRead(buttonPin) == HIGH)
+  {
+    stateChanged = true;
+    
+    if (ledOn == true)
+    {
+      ledOn = false;    
+    }
+    else
+    {
+      ledOn = true;
+    }
+    Serial.println(Toggled LED);
+    delay(300);
+  }
+  
+   LED
+  if (ledOn == true)
+  {
+    analogWrite(ledPin, potentiometerMapped);
+  }
+  else
+  {
+    analogWrite(ledPin, 0);
+  }
+  
+   Potentiometer display
+  if(potentiometer != displayNumber  stateChanged == true)
+  {
+    stateChanged = false;
+  	displayNumber = potentiometer;
+    
+  	lcd.clear();  
+    
+    if (ledOn == true)
+    {
+  	lcd.setCursor(0,0);
+  	lcd.print(potentiometer);  
+  	lcd.setCursor(0,1);
+  	lcd.print(potentiometerMapped);  
+    } 
+  }
+}
