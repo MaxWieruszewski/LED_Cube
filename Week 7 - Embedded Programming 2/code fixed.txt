@@ -1,0 +1,102 @@
+// C++ code
+// Autor: Maximilian Wieruszewski
+// MatrikelNummer: 25447
+
+
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27,16,2);
+
+
+int displayNumber = -1;
+
+
+const int buttonPin = 6;
+const int ledPin = 5;
+const int pot = 29;
+
+
+bool ledOn = false;
+
+
+void setup() {
+  Wire.setSDA(8);
+  Wire.setSCL(9);
+
+
+  Serial.begin(9600);
+
+
+  delay(3000);
+
+
+  Serial.println("SETUP");
+
+
+  lcd.init();      
+  lcd.backlight();  
+ 
+  pinMode(pot, INPUT);
+ 
+  pinMode(buttonPin, INPUT);
+  pinMode(ledPin, OUTPUT);
+
+
+  Serial.println("Setup complete");
+}
+
+
+void loop() {
+  int potentiometer = analogRead(pot);
+  int potentiometerMapped = map(potentiometer, 0, 1023, 0, 255);
+ 
+  bool stateChanged = false;
+ 
+  // Button Toggle
+  if (digitalRead(buttonPin) == HIGH)
+  {
+    stateChanged = true;
+   
+    if (ledOn == true)
+    {
+      ledOn = false;    
+    }
+    else
+    {
+      ledOn = true;
+    }
+    Serial.println("Toggled LED");
+    delay(300);
+  }
+ 
+  // LED
+  if (ledOn == true)
+  {
+    analogWrite(ledPin, potentiometerMapped);
+  }
+  else
+  {
+    analogWrite(ledPin, 0);
+  }
+ 
+  int tolerance = 35;
+
+
+  // Potentiometer display
+  if((potentiometer < (displayNumber - tolerance) || potentiometer > (displayNumber + tolerance))  || stateChanged == true)
+  {
+    stateChanged = false;
+    displayNumber = potentiometer;
+   
+    lcd.clear();  
+   
+    if (ledOn == true)
+    {
+    lcd.setCursor(0,0);
+    lcd.print(potentiometer);  
+    lcd.setCursor(0,1);
+    lcd.print(potentiometerMapped);  
+    }
+  }
+}
+
